@@ -19,9 +19,9 @@ namespace DigitalWallet.Api.Controllers
         public IActionResult Login([FromBody] LoginRequest request)
         {
             // Validação simulada (substitua por lógica real de validação)
-            if (request.Username == "admin" && request.Password == "password")
+            if (request.Email == "admin" && request.Password == "password")
             {
-                var token = _tokenGenerator.GenerateToken(request.Username);
+                var token = _tokenGenerator.GenerateToken(request.Email);
                 return Ok(new { Token = token });
             }
 
