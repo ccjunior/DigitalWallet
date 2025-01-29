@@ -31,7 +31,6 @@ namespace DigitalWallet.Application.Services.Impl
             }
             else
             {
-                wallet = new Wallet(userId);
                 wallet.AddBalance(amount);
                 await _walletRepository.UpdateAsync(wallet);
             }
@@ -45,7 +44,7 @@ namespace DigitalWallet.Application.Services.Impl
                 return ServiceResult<UserBalanceResponse>.ErrorResult("Usuário não encontrado.");
 
             var wallet = await _walletRepository.GetByUserIdAsync(userId); 
-            var userBalanceResponse = new UserBalanceResponse(user.Id, user.Name, wallet.Balance);
+            var userBalanceResponse = new UserBalanceResponse(user.Id, user.Name, wallet.Id, wallet.Balance);
 
             return ServiceResult<UserBalanceResponse>.SuccessResult(userBalanceResponse);
         }

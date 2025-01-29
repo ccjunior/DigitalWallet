@@ -17,32 +17,37 @@ namespace DigitalWallet.Api.Configuration.Extensions
         {
             services.AddSwaggerGen(swagger =>
             {
-                swagger.EnableAnnotations();
+                swagger.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "API Digital Wallet",
+                    Description = "API reponsável gerenciar carteiras digitais e transações financeiras",
+                    Version = "v1"
+                });
 
                 swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
                     Description = "JWT Authorization header using the Bearer scheme."
                 });
 
                 swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
                 {
-                    new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
-            });
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
             });
 
             return services;
@@ -68,9 +73,6 @@ namespace DigitalWallet.Api.Configuration.Extensions
                 {
                     swagger.SwaggerEndpoint($"/swagger/{apiVersion}/swagger.json", $"{apiVersion}");
                 });
-
-            application
-                .UseMvcWithDefaultRoute();
 
             return application;
         }

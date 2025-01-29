@@ -1,5 +1,7 @@
+using DigitalWallet.Api;
 using DigitalWallet.Api.Configuration;
 using DigitalWallet.Api.Configuration.Extensions;
+using DigitalWallet.Api.Provider;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -15,63 +17,77 @@ try
     var configurations = builder.Configuration;
 
 
+    builder.Services.AddAuthorization();
+
+    // Configuração do JWT
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
+            options.RequireHttpsMetadata = false;
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
                 ValidIssuer = builder.Configuration["Jwt:Issuer"],
                 ValidAudience = builder.Configuration["Jwt:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                ClockSkew = TimeSpan.Zero
+                //ValidateIssuer = true,
+                //ValidateAudience = true,
+                //ValidateLifetime = true,
+                //ValidateIssuerSigningKey = true,
+               
             };
         });
 
-    /// <sumary>
-    /// Configura as configurações de inicialização da aplicação.
-    /// </sumary>
-    builder.Services
-        .ConfigureSerilog(configurations)
-        .AddHttpContextAccessor()
-        .AddEndpointsApiExplorer()
-        .AddSwaggerGen()
-        .ConfigureDependencies(configurations)
-        .AddDatabase(configurations)
-        .ConfigureCors()
-        .AddControllers(options =>
-        {
-            options.EnableEndpointRouting = false;
-            options.Filters.Add(new ProducesAttribute("application/json"));
+   
 
-        }).AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        });
+    builder.Services.AddSingleton<TokenProvider>();
+
+    builder.Services
+        //.ConfigureJwt(configurations)
+        //.ConfigureSerilog(configurations)
+        //.AddHttpContextAccessor()
+        .AddEndpointsApiExplorer()
+        //.AddSwaggerGen()
+        .ConfigureDependencies(configurations)
+        .AddDatabase(configurations);
+    //.ConfigureCors()
+    //.AddControllers(options =>
+    //{
+    //    options.EnableEndpointRouting = false;
+    //    options.Filters.Add(new ProducesAttribute("application/json"));
+
+    //}).AddJsonOptions(options =>
+    //{
+    //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    //});
+
+    builder.Services.AddControllers();
+
+
+    
 
     builder.Services
               .ConfigureSwagger(configurations);
 
+   
 
-    builder.Services.AddAuthorization();
-
-    builder.Services.AddSingleton<JwtTokenGeneratorConfiguration>();
 
     var applicationbuilder = builder.Build();
 
     applicationbuilder
-            .UseStaticFiles()
-            .UseCookiePolicy()
-            .UseHsts()
-            .UseCors()
-            .UseResponseCaching()
+            //.UseHttpsRedirection()
+            //.UseStaticFiles()
+            //.UseCookiePolicy()
+            //.UseHsts()
+            //.UseCors()
+            //.UseResponseCaching()
+            .UseAuthorizationDebug()
             .UseSwaggerConfigurations(configurations)
-            .UseAuthentication()
-            .UseAuthorization()
+            .UseRouting()
+            .UseAuthentication()  
+            .UseAuthorization()   
             .ApplyMigrations();
-           
+
     applicationbuilder.MapControllers();
 
 

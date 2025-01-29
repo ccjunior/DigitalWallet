@@ -7,7 +7,6 @@ using DigitalWallet.Domain.Interfaces;
 using DigitalWallet.Domain.Interfaces.Repositories;
 using Newtonsoft.Json;
 using Serilog;
-using System;
 
 namespace DigitalWallet.Application.Services.Impl
 {
@@ -51,7 +50,7 @@ namespace DigitalWallet.Application.Services.Impl
                 await unitOfWork.CommitAsync();
                 await transaction.CommitAsync();
 
-                var UserResponse = new UserResponseDto(user.Id, user.Name, wallet.Balance);
+                var UserResponse = new UserResponseDto(user.Id, user.Name, user.Email, wallet.Balance);
 
                 return ServiceResult<UserResponseDto>.SuccessResult(UserResponse);
             }
@@ -63,10 +62,17 @@ namespace DigitalWallet.Application.Services.Impl
             }
         }
 
+        public async Task<ServiceResult<UserFullResponseDto>> GetUserByEmailAsync(string email)
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+            var userResponse = new UserFullResponseDto(user.Id, user.Name, user.Email, user.PasswordHash, user.DateCreated,user.Wallet.Balance);
+            return ServiceResult<UserFullResponseDto>.SuccessResult(userResponse);
+        }
+
         public async Task<ServiceResult<UserResponseDto>> GetUserByIdAsync(Guid userId)
         {
             var user = await _userRepository.GetByIdAsync(userId);
-            var userResponse = new UserResponseDto(user.Id, user.Name, user.Wallet.Balance);
+            var userResponse = new UserResponseDto(user.Id, user.Name, user.Email, user.Wallet.Balance);
             return ServiceResult<UserResponseDto>.SuccessResult(userResponse);
         }
 

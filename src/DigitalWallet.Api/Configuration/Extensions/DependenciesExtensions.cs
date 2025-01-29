@@ -27,14 +27,15 @@ namespace DigitalWallet.Api.Configuration.Extensions
                 .AddScoped<IDatabaseMigrator, DatabaseMigrator>()
                 // Services
                 .AddTransient<IAuthenticationService, AuthenticationService>()
-                //.AddTransient<ITransactionService, TransactionService>()
                 .AddTransient<IUserService, UserService>()
                 .AddTransient<IWalletService, WalletService>()
+                .AddTransient<ITransactionService, TransactionService>()
                 // Repository
                 .AddScoped(typeof(IUnitOfWork<>), typeof(UnitOfWork<>))
                 .AddScoped(typeof(IRepository<>), typeof(BaseRepository<>))
                 .AddScoped<IUserRepository, UserRepository>()
-                .AddScoped<IWalletRepository, WalletRepository>();
+                .AddScoped<IWalletRepository, WalletRepository>()
+                .AddScoped<ITransactionRepository, TransactionRepository>();
 
             return services;
         }

@@ -21,14 +21,8 @@ namespace DigitalWallet.Data.Repository
         public async Task<User> GetByEmailAsync(string email)
         {
             return await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email);
-        }
-
-        public async Task<User> GetWithWalletAsync(Guid userId)
-        {
-            return await _context.Users
-                .Include(u => u.Wallet)
-                .FirstOrDefaultAsync(u => u.Id == userId);
+                    .Include(u => u.Wallet)
+                    .FirstOrDefaultAsync(u => u.Email == email);
         }
     }
 }
