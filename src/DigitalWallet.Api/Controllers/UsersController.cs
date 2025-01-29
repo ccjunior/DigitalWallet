@@ -1,5 +1,6 @@
 ﻿using DigitalWallet.Application.Services;
 using DigitalWallet.Domain.Dtos.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DigitalWallet.Api.Controllers
@@ -25,6 +26,15 @@ namespace DigitalWallet.Api.Controllers
 
             if (!result.Success)
                 return Conflict(result.Message);
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetUsers()
+        {
+            var result = await _userService.GetUsers();
 
             return Ok(result);
         }

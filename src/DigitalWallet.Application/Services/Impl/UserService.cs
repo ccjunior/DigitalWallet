@@ -65,7 +65,7 @@ namespace DigitalWallet.Application.Services.Impl
         public async Task<ServiceResult<UserFullResponseDto>> GetUserByEmailAsync(string email)
         {
             var user = await _userRepository.GetByEmailAsync(email);
-            var userResponse = new UserFullResponseDto(user.Id, user.Name, user.Email, user.PasswordHash, user.DateCreated,user.Wallet.Balance);
+            var userResponse = new UserFullResponseDto(user.Id, user.Name, user.Email, user.PasswordHash, user.DateCreated, user.Wallet.Id, user.Wallet.Balance);
             return ServiceResult<UserFullResponseDto>.SuccessResult(userResponse);
         }
 
@@ -74,6 +74,12 @@ namespace DigitalWallet.Application.Services.Impl
             var user = await _userRepository.GetByIdAsync(userId);
             var userResponse = new UserResponseDto(user.Id, user.Name, user.Email, user.Wallet.Balance);
             return ServiceResult<UserResponseDto>.SuccessResult(userResponse);
+        }
+
+        public async Task<IEnumerable<UserFullResponseDto>> GetUsers()
+        {
+            var users = await _userRepository.GetAllAsync();
+            return users.Select(u => new UserFullResponseDto(u.Id, u.Name, u.Email, u.PasswordHash, u.DateCreated, u.Wallet.Id, u.Wallet.Balance));
         }
 
         private async Task<User> GetUser(string email)

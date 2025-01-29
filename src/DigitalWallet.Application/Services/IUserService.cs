@@ -9,5 +9,6 @@ namespace DigitalWallet.Application.Services
         Task<ServiceResult<UserResponseDto>> CreateUserAsync(RegisterRequest dto);
         Task<ServiceResult<UserResponseDto>> GetUserByIdAsync(Guid userId);
         Task<ServiceResult<UserFullResponseDto>> GetUserByEmailAsync(string email);
+        Task<IEnumerable<UserFullResponseDto>> GetUsers();
     }
 }

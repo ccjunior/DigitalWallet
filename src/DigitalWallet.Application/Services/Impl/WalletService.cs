@@ -1,10 +1,5 @@
-﻿using DigitalWallet.Data.Context;
-using DigitalWallet.Domain.Dtos.Response;
-using DigitalWallet.Domain.Entities;
-using DigitalWallet.Domain.Interfaces;
+﻿using DigitalWallet.Domain.Dtos.Response;
 using DigitalWallet.Domain.Interfaces.Repositories;
-using Newtonsoft.Json;
-using Serilog;
 
 namespace DigitalWallet.Application.Services.Impl
 {
@@ -12,13 +7,11 @@ namespace DigitalWallet.Application.Services.Impl
     {
         private readonly IWalletRepository _walletRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IUnitOfWork<MyDbContext> _unitOfWork;
 
-        public WalletService(IWalletRepository walletRepository, IUserRepository userRepository, IUnitOfWork<MyDbContext> unitOfWork)
+        public WalletService(IWalletRepository walletRepository, IUserRepository userRepository)
         {
             _walletRepository = walletRepository;
             _userRepository = userRepository;
-            _unitOfWork = unitOfWork;
         }
 
         public async Task<ServiceResult<UserBalanceResponse>> GetWalletByUserIdAsync(Guid userId)

@@ -24,5 +24,12 @@ namespace DigitalWallet.Data.Repository
                     .Include(u => u.Wallet)
                     .FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        public override async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await _context.Users
+                    .Include(u => u.Wallet)
+                    .ToListAsync(); 
+        }
     }
 }

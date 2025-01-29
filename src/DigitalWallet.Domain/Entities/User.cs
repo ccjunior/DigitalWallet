@@ -16,5 +16,10 @@
             PasswordHash = passwordHash;
             Wallet = new Wallet();
         }
+
+        public void SetWallet(Wallet wallet)
+        {
+            Wallet = wallet;
+        }
     }
 }
