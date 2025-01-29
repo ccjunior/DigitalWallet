@@ -21,22 +21,7 @@ namespace DigitalWallet.Application.Services.Impl
             _unitOfWork = unitOfWork;
         }
 
-        public async Task AddFundsAsync(Guid userId, decimal amount)
-        {
-           var wallet = await _walletRepository.GetByUserIdAsync(userId);
-            if (wallet == null)
-            {
-                wallet = new Wallet(userId);
-                await _walletRepository.AddAsync(wallet);
-            }
-            else
-            {
-                wallet.AddBalance(amount);
-                await _walletRepository.UpdateAsync(wallet);
-            }
-        }
-
-        public async Task<ServiceResult<UserBalanceResponse>> GetBalanceAsync(Guid userId)
+        public async Task<ServiceResult<UserBalanceResponse>> GetWalletByUserIdAsync(Guid userId)
         {
            var user = await _userRepository.GetByIdAsync(userId);
 
@@ -47,44 +32,6 @@ namespace DigitalWallet.Application.Services.Impl
             var userBalanceResponse = new UserBalanceResponse(user.Id, user.Name, wallet.Id, wallet.Balance);
 
             return ServiceResult<UserBalanceResponse>.SuccessResult(userBalanceResponse);
-        }
-
-        public async Task TransferFundsAsync(Guid fromUserId, Guid toUserId, decimal amount)
-        {
-            Log.Information(
-            $"[LOG INFORMATION] - SET TITLE {nameof(WalletService)} - METHOD {nameof(TransferFundsAsync)}\n");
-
-            var fromWallet = await _walletRepository.GetByUserIdAsync(fromUserId);
-            var toWallet = await _walletRepository.GetByUserIdAsync(toUserId);
-
-            if (fromWallet == null || toWallet == null)
-                throw new Exception("Invalid sender or receiver.");
-
-            if (fromWallet.Balance < amount)
-                throw new Exception("Insufficient balance.");
-
-            fromWallet.RemoveBalance(amount);
-            toWallet.AddBalance(amount);
-
-            var transaction = await _unitOfWork.BeginTransactAsync();
-
-            try
-            {
-
-                await _walletRepository.UpdateAsync(fromWallet);
-                await _walletRepository.UpdateAsync(toWallet);
-
-
-                
-                await _unitOfWork.CommitAsync();
-                await transaction.CommitAsync();
-
-            }
-            catch (Exception exception)
-            {
-                transaction.Rollback();
-                Log.Error($"[LOG ERROR] - Exception: {exception.Message} - {JsonConvert.SerializeObject(exception)}\n");
-            }
         }
     }
 }

@@ -23,7 +23,7 @@ namespace DigitalWallet.Api.Controllers
         public async Task<IActionResult> GetBalance()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var result = await _walletService.GetBalanceAsync(Guid.Parse(userId));
+            var result = await _walletService.GetWalletByUserIdAsync(Guid.Parse(userId));
 
             if (!result.Success)
                 return NotFound(result.Message);

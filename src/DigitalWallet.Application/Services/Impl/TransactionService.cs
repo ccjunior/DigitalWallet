@@ -1,5 +1,6 @@
 ﻿using DigitalWallet.Data.Context;
 using DigitalWallet.Domain.Dtos;
+using DigitalWallet.Domain.Dtos.Response;
 using DigitalWallet.Domain.Entities;
 using DigitalWallet.Domain.Enum;
 using DigitalWallet.Domain.Interfaces;
@@ -144,6 +145,24 @@ namespace DigitalWallet.Application.Services.Impl
                 Log.Error($"[LOG ERROR] - Exception: {exception.Message} - {JsonConvert.SerializeObject(exception)}\n");
                 throw;
             }
+        }
+
+        public async Task<ServiceResult<IEnumerable<TransctionTransferResponse>>> GetTransfersAsync(Guid walletId, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var transfers = await _transactionRepository.GetTransfersByWalletIdAsync(walletId, startDate, endDate);
+
+            if (!transfers.Any())
+                return ServiceResult<IEnumerable<TransctionTransferResponse>>.ErrorResult("Nenhuma transferência encontrada para os critérios especificados.");
+
+            var transferResponse = new List<TransctionTransferResponse>();
+
+            transfers.ToList().ForEach(item =>
+            {
+                var response = new TransctionTransferResponse(walletId, item.TransactionType.ToString(), item.DateCreated.ToShortDateString(), item.Amount);
+                transferResponse.Add(response);
+            });
+
+            return ServiceResult<IEnumerable<TransctionTransferResponse>>.SuccessResult(transferResponse);
         }
     }
 }

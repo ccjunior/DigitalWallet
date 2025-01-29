@@ -11,10 +11,12 @@ namespace DigitalWallet.Api.Controllers
     public class TransactionsController : ControllerBase
     {
         private readonly ITransactionService _transactionService;
+        private readonly IWalletService _walletService;
 
-        public TransactionsController(ITransactionService transactionService)
+        public TransactionsController(ITransactionService transactionService, IWalletService walletService)
         {
             _transactionService = transactionService;
+            _walletService = walletService;
         }
 
         [HttpPost("deposit")]
@@ -48,6 +50,33 @@ namespace DigitalWallet.Api.Controllers
                 return BadRequest(result.Message);
 
             return Ok(result.Message);
+        }
+
+        [HttpGet("transfers")]
+        public async Task<IActionResult> GetTransfers([FromQuery]Guid userId, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+        {
+            var walletId = await GetWalletIdByUserId(userId); 
+
+            if (walletId == Guid.Empty)
+                return NotFound("Carteira não encontrada para o usuário.");
+
+            var result = await _transactionService.GetTransfersAsync(walletId, startDate, endDate);
+
+            if (!result.Success)
+                return NotFound(result.Message);
+
+            return Ok(result.Data);
+        }
+
+        private async Task<Guid> GetWalletIdByUserId(Guid userId)
+        {
+            var wallet = await _walletService.GetWalletByUserIdAsync(userId);
+            if (wallet.Data == null)
+            {
+                return Guid.Empty;
+            }
+
+            return wallet.Data.WalletId;
         }
     }
 }
