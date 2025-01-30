@@ -1,4 +1,5 @@
 ﻿using DigitalWallet.Data.Context;
+using DigitalWallet.Domain.Common;
 using DigitalWallet.Domain.Entities;
 using DigitalWallet.Domain.Enum;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,8 +16,8 @@ namespace DigitalWallet.Data.Helper
             if (!context.Users.Any())
             {
                 // Usuários
-                var user1 = new User("John Doe", "john@example.com", "hashedpassword1");
-                var user2 = new User("Jane Doe", "jane@example.com", "hashedpassword2");
+                var user1 = new User("John Doe", "john@example.com", PasswordHasher.HashPassword("hashedpassword1"));
+                var user2 = new User("Jane Doe", "jane@example.com", PasswordHasher.HashPassword("hashedpassword2"));
 
                 // Carteiras associadas aos usuários
                 var wallet1 = user1.Wallet;
