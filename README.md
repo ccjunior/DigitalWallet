@@ -1,7 +1,7 @@
 
 # **Digital Wallet API**
 
-A **Digital Wallet API** é uma aplicação para gerenciar carteiras digitais, transações financeiras e usuários. A API oferece funcionalidades como registro de usuários, gerenciamento de carteiras, depósitos, saques, transferências e consulta de histórico de transações. Um projeto meramanete para estudos.
+A **Digital Wallet API** é uma aplicação para gerenciar carteiras digitais, transações financeiras e usuários. A API oferece funcionalidades como registro de usuários, gerenciamento de carteiras, depósitos, saques, transferências e consulta de histórico de transações. Um projeto dedicado exclusivamente a estudos.
 
 ## **Tecnologias Utilizadas**
 
